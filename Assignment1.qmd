@@ -1,0 +1,69 @@
+---
+title: "Assignment1"
+author: "Mubin Ejaz"
+format: html
+editor: visual
+---
+
+## Overview
+
+I started with trying to find effects of pollutants on air quality in new york, and ended up with an article that was actually an [Air Quality Advisory from NY](https://dec.ny.gov/news/press-releases/2026/7/air-quality-health-advisory-extended-for-new-york-city-metro-and-long-island-regions).
+
+Following excerpt from the article changed my assignment focus:
+
+*"**OZONE**\
+Increased heat can lead to the formation of ground-level ozone, a major component of photochemical smog. Automobile exhaust and out-of-state emission sources are the primary sources of ground-level ozone and the most serious air pollution problems in the northeast. This surface pollutant should not be confused with the protective layer of ozone in the upper atmosphere.\
+Ozone is not directly emitted, instead it is produced when sunlight chemically reacts with nitrogen oxides (NOx) and volatile organic compounds (VOCs) from automobile exhaust and industrial emissions. High AQI due to ozone is not as visible as PM2.5 because it is a colorless gas but will produce hazy skies and reduce visibility in high concentrations.\
+Ozone levels generally decrease at night and can be minimized during daylight hours by curtailment of automobile travel and the use of public transportation where available. "*
+
+##### This brought me to a conclusion that pollutants that are everyday increasing i.e. automobile exhaust and industrial emissions, high AQI most probably are more in summer time due to increased heat chemically interacting with these pollutants and forming ground-level ozone.  
+
+The dataset I chose from EPA.gov is perfect to dabble with my hypothesis.
+
+Lets look at the dataset I got from <https://www.epa.gov/outdoor-air-quality-data/download-daily-data>, I would load it in AirData, filter only the data that it queries from AirNow server, then carve out a new data frame that has Date, State, Daily.Max.8.hour.Ozone.Concentration, Daily.AQI.Value. I also changed the name of ozone concentration column and Daily.AQI.Value to OzoneLevels and AQI. I then will plot only the summer OzoneLevels in NY
+
+```{r}
+library(tidyverse)
+
+AirData<-read.csv("ad_viz_plotval_data.csv")
+
+
+AirNow <- AirData %>% filter(Source=="AirNow")
+
+AirNow <- AirNow %>%
+  select(Date, State, Daily.Max.8.hour.Ozone.Concentration,
+         Daily.AQI.Value, Site.ID) %>%
+  rename(OzoneLevels = Daily.Max.8.hour.Ozone.Concentration, 'AQI'=Daily.AQI.Value)
+
+AirNow <- AirNow %>%
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y"))
+
+
+ AirNow_Summer <- AirNow %>%
+  filter(format(Date, "%m") %in% c("06", "07", "08"))
+
+ 
+ ggplot(AirNow_Summer, aes(x = Date, y = OzoneLevels)) + geom_line()
+ ggplot(AirNow_Summer, aes(x = OzoneLevels, y = AQI)) + geom_line()+labs(
+    title = "Ozone Levels vs AQI",
+    x = "Ground Level Ozone Levels",
+    y = "AQI"
+  )
+```
+
+Let's look at Ozone Levels in NY in winter time
+
+```{r}
+ AirNow_Winter <- AirNow %>%
+  filter(format(Date, "%m") %in% c("01", "02", "03"))
+ ggplot(AirNow_Winter, aes(x = Date, y = OzoneLevels)) +
+  geom_line()
+ 
+  ggplot(AirNow_Winter, aes(x = OzoneLevels, y = AQI)) + geom_line()+labs(title = "Ozone Levels vs AQI",
+    x = "Ground Level Ozone Levels",
+   y = "AQI")
+
+
+```
+
+In both demonstration, as summer gets cooler, the Ozone levels go down. or when winter gets warmer, the ozone levels get higher. And Ozone levels, in both cases, are almost directly proportional to one another.
