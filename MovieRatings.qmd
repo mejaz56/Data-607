@@ -1,0 +1,50 @@
+---
+title: "Movie Ratings"
+author: "Mubin Ejaz"
+format: html
+editor: visual
+---
+
+## 
+
+```{r}
+library(tidyverse)
+library(DBI)
+library(RPostgres)
+MovieRatingConnection <- dbConnect(
+  RPostgres::Postgres(),
+  dbname = "data607",
+  host = "localhost",
+  port = 5432,
+  user = "postgres",
+  password = Sys.getenv("PG_PASSWORD")
+)
+
+```
+
+```{r}
+movieratings <- dbGetQuery(MovieRatingConnection, "
+  SELECT
+      users.name,
+      movies.title,
+      ratings.rating
+  FROM users
+  CROSS JOIN movies
+  LEFT JOIN ratings
+      ON users.user_id = ratings.user_id
+      AND movies.movie_id = ratings.movie_id
+")
+
+```
+
+```{r}
+
+library(dplyr)
+
+movieratings |>
+  group_by(title) |>
+  summarise(
+    number_of_ratings = sum(!is.na(rating)),
+    average_rating = mean(rating, na.rm = TRUE)
+  )
+```
