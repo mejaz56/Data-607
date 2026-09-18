@@ -1,0 +1,34 @@
+---
+title: "Window Function"
+Author: Mubin Ejaz
+format: html
+editor: visual
+---
+
+## Approach
+
+For this assignment, we need to have a data downloaded for dataset that is continous time series for two or more items. We need to Use window functions (in SQL or dplyr) to calculate the year-to-date average and the six-day moving averages for each item.
+
+I find getSymbols function to be more helpful in downloading the stocks data (Suggested by Chatgpt) but I was also able to download a csv for both Apple and Microsoft from Nasdaq.
+
+Once I've read the data into a dataframe, I'd examine the columns that're being read in. I'd clean up the data so it's useful. I'd organize the data by item. I would calculate the yearly average
+
+then I'd use window functions (OVER in SQL, cummean and slide_dbl() functions to calculate corresponding averages.
+
+## Reading in the stocks data: 
+
+I'd be using the following data.
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(quantmod)
+##downloading the stocks data. 
+AAPL <- getSymbols("AAPL", 
+                   src = "yahoo",
+                   from = "2025-01-01",
+                   auto.assign = FALSE)
+AAPL
+AAPLCSV <- read.csv("HistoricalData_1789699125674.csv")
+AAPLCSV
+```
