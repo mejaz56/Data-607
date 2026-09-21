@@ -1,0 +1,134 @@
+---
+title: "Global Baseline Estimate"
+author: "Mubin"
+format: html
+editor: visual
+---
+
+## Approach
+
+I'll use the data that I collected in last week 2A. The formula provided is:\
+\
+**Global Baseline Estimate = Mean Movie Rating + Pitch Perfect 2's rating relative to average + Param's** \*\*rating relative to average\*\*\
+Predicted Ratings = µ + b~u~ + b~i~
+
+I already have µ as average_rating in my code. I'll calculate Avg User Ratings as\
+
+```{=html}
+<pre>
+
+   userrating <- dbGetQuery(
+                             MovieRatingConnection,
+                             "SELECT users.name, 
+                             AVG(ratings.rating) 
+                             AS avgUserRatings
+                             FROM users 
+                             LEFT JOIN ratings 
+                             ON users.user_id = ratings.user_id 
+                             GROUP BY users.name")
+                           </pre>
+```
+
+User ratings will help me calculate user bias. Since none of the code is due at this time. My main goal is to 1. Get ratings data into R ==done\
+2. Calculate each user's average ===done\
+3. Calculate each movie's average ===done\
+4. Calculate overall average ==== done\
+5. Calculate user adjustments =====done\
+6. Calculate movie adjustments ==== I might or might not need it\
+7. Use those values to predict a missing rating would be fiddling with R to do this.\
+8. Make a movie recommendation ==\>final goal
+
+#### Previous assignment
+
+```{r}
+
+library(DBI)
+library(RPostgres)
+library(dplyr)
+
+MovieRatingConnection <- dbConnect( RPostgres::Postgres(), dbname = "data607", host = "localhost", port = 5432, user = "postgres", password = Sys.getenv("PG_PASSWORD") )
+
+movieratings <- dbGetQuery(MovieRatingConnection, "
+  SELECT
+      users.name,
+      movies.title,
+      ratings.rating
+  FROM users
+  CROSS JOIN movies
+  LEFT JOIN ratings
+      ON users.user_id = ratings.user_id
+      AND movies.movie_id = ratings.movie_id
+")
+movieratings
+
+movie_summary<-movieratings |>
+  group_by(title) |>
+  summarise(
+    number_of_ratings = sum(!is.na(rating)),
+    average_rating = mean(rating, na.rm = TRUE)
+  )
+
+userrating <- dbGetQuery(MovieRatingConnection, "
+SELECT
+    users.name,
+    AVG(ratings.rating) AS avgUserRatings
+FROM users
+LEFT JOIN ratings
+    ON users.user_id = ratings.user_id
+GROUP BY users.name")
+
+userrating
+movie_summary
+
+
+
+OverallAverage <- mean(movieratings$rating, na.rm = TRUE)
+
+result_user<- userrating%>% select(name, avguserratings)%>%mutate(diff=avguserratings-OverallAverage)
+result_movie<-movie_summary %>% 
+              select(title, average_rating)%>% 
+              mutate(moviedifftoavg = average_rating-OverallAverage)
+df<-movie_summary%>%select(title, average_rating)
+
+GlobalBaselineEstimate <- OverallAverage +
+                                         result_movie %>%
+                                         filter(title == "The Housemaid") %>%
+                                         pull(moviedifftoavg) +
+                                         result_user %>%
+                                         filter(name == "Shameer Q") %>%
+                                         pull(diff)
+
+GlobalBaselineEstimate
+
+
+```
+
+I would predict that Shameer Q would rate *The Housemaid* 2.259259 (he's a tough critic).
+
+```{r}
+#Pulling all the movies, shameer has NA as
+recommendations <- movieratings %>%
+  filter(name == "Shameer Q", is.na(rating))
+
+
+recommendations <- recommendations %>%
+  left_join(result_movie %>% select(title, moviedifftoavg),
+    by = "title"
+  ) %>%
+  mutate(
+    prediction = OverallAverage +
+                 moviedifftoavg +
+                 result_user %>%
+                   filter(name == "Shameer Q") %>%
+                   pull(diff)
+  )
+
+recommendations
+```
+
+Compare to other movies that Shameer has seen and rated, I predict he'd rate this one higher than others as this movie has been rated highly by the people that have seen it. I predict he'd rate it 2.259 (which is a lot higher than he's rated any movies he's seen).
+
+### Challenge:
+
+Running SQL queries and R code still remains my top challenge, and I believe, is the main goal of this assignment. I am getting better but still takes me long time.\
+\
