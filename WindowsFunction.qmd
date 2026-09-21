@@ -9,26 +9,70 @@ editor: visual
 
 For this assignment, we need to have a data downloaded for dataset that is continous time series for two or more items. We need to Use window functions (in SQL or dplyr) to calculate the year-to-date average and the six-day moving averages for each item.
 
-I find getSymbols function to be more helpful in downloading the stocks data (Suggested by Chatgpt) but I was also able to download a csv for both Apple and Microsoft from Nasdaq.
+I downloaded Apple and Microsoft (AAPL and MSFT)'s historical data from Nasdaq as a csv .
 
-Once I've read the data into a dataframe, I'd examine the columns that're being read in. I'd clean up the data so it's useful. I'd organize the data by item. I would calculate the yearly average
+Once I read the data into a dataframe, I examined the columns that're being read in. I then cleaned up the data so it's useful. After organizing the data by item. I calculated the yearly average YTD and the slide_dbl function for moving average.
 
-then I'd use window functions (OVER in SQL, cummean and slide_dbl() functions to calculate corresponding averages.
+In conclusion, I graphed the yearly average as mean vs moving average over the window of 5 on the same graph. It showed me how accurately a moving window average is compared to just an overall average, which is skewed.
 
-## Reading in the stocks data: 
-
-I'd be using the following data.
+## Code
 
 ```{r}
 library(tidyverse)
-library(dplyr)
-library(quantmod)
+library(slider)
+
+##library(quantmod)
 ##downloading the stocks data. 
-AAPL <- getSymbols("AAPL", 
-                   src = "yahoo",
-                   from = "2025-01-01",
-                   auto.assign = FALSE)
-AAPL
 AAPLCSV <- read.csv("HistoricalData_1789699125674.csv")
-AAPLCSV
+MSFTCSV <- read.csv("HistoricalData_1789806795427.csv") 
+
+
+## Cleaning up the raw data to fix Date from char to a date format, 
+## 
+AAPL<-AAPLCSV%>%
+  mutate(Date=as.Date(Date, format="%m/%d/%Y"))
+MSFT <-MSFTCSV%>%
+          mutate(Date=as.Date(Date, format="%m/%d/%Y"))
+
+
+ MSFT <-MSFT%>% mutate(Close = as.numeric(gsub("\\$","", Close.Last)))
+ AAPL <-AAPL%>% mutate(Close = as.numeric(gsub("\\$","", Close.Last))) 
+
+
+## Adding a column that shows which stock it is
+MSFT <- MSFT %>% mutate(Item="MSFT")
+AAPL <- AAPL %>% mutate(Item="AAPL")
+
+## Selecting just the needed columns
+MSFT<- MSFT %>%
+              select(Item, Date, Close)
+AAPL<-AAPL %>%
+             select(Item, Date, Close)
+
+Stocks<- rbind(AAPL, MSFT)
+
+AAPL <- AAPL %>%
+  arrange(Date) %>%
+  mutate(Mean = cummean(Close))
+
+MSFT <- MSFT %>%
+  arrange(Date) %>%
+  mutate(Mean = cummean(Close))
+
+df <- AAPL%>%
+  mutate(
+    # 5 day moving average (current row + 1 row before)
+    moving_avg = slide_dbl(Close, mean, .before = 5))
+
+ggplot(df, aes(x = Date)) +
+  geom_line(aes(y = Close)) +
+  geom_line(aes(y = moving_avg), linewidth = 1.2) +
+  geom_line(aes(y = Mean), color="red", linewidth = 1.2) +
+  labs(
+    title = "AAPL Closing Price, 5 Day Moving Average, and Mean",
+    x = "Date",
+    y = "Price ($)"
+  )
+
+
 ```
