@@ -1,0 +1,128 @@
+---
+title: "Project 1"
+author: "Mubin Ejaz"
+format: html
+editor: visual
+---
+
+# Approach:
+
+#### TextFile manupulation:
+
+I will be starting out by saving the .txt provided to the same folder as the project. I'll use the read_lines("textfilename") function of tidyverse/dplyr to read in the text file. I noticed the pattern of the text file to have the following pattern:\
+dash row —-\>row 1 (I ended up stripping this one off the bat)\
+header —–\>row 1\
+header ——\>row 2\
+dash row —–\>row 3\
+player data—\>row 4\
+player data —\>row 5\
+dash row—\>row 6\
+player data—–\>row 7\
+player data——\>row 8\
+dash row —–\>row 9\
+\
+Row 1 to row 3 can now just simply be stripped away by declaring a new variable and start saving it from line 4 of the txt file.
+
+I also can use str_split and use \| as a delimiter to break the rows into columns.\
+\
+Trying to display playerDataFrame and ratingsDataFram was giving me error. Upon google search, I realize they were still just list of strings and characters the **as.data.frame(do.call(rbind, playerDataFrame))** would help me convert them into actual data frames that I can then manipulate.\
+\
+I'll have to play around with the code to see which combination of join/ select/mutate would give me a better structure that I can then output using write_csv().
+
+## Code Chunks Tried
+
+```{r}
+library(tidyverse)
+library(readr)
+library(knitr)
+library(DT)
+```
+
+```{r}
+#reading the text file in.  
+TextFile <- read_lines("tournamentinfo.txt")
+
+#declaring TF as a character tibble. This is where structured TextFile will be saved
+TF <- character()
+
+#counter variable
+counter <- 1
+
+#length of TextFile, would help me loop through the raw TextFile
+lf <- length(TextFile)
+
+#looping through TextFile from 1 to end row of the TextFile 
+while (counter <= lf) {
+  #stripping the first row of dashes
+  if (!str_detect(TextFile[counter], "^\\s*-+\\s*$")) {
+    TF <- c(TF, str_sub(TextFile[counter],2, str_length(TextFile[counter])-1))
+  }
+  
+  counter <- counter + 1
+}
+
+r<-1
+
+#will split the user data vs ratings data. 
+playerDataFrame<-character()
+ratingsDataFram<-character()
+
+lf<-length(TF)
+n<-3
+i<-1
+j<-1
+
+#looping through and splitting rows into different dataframes
+while(lf){
+  if(n %% 2 == 1){
+    playerDataFrame[i]<-TF[n]
+    i<-i+1
+    
+  }
+  else if(n%% 2 == 0){
+    ratingsDataFram[j]<-TF[n]
+    j<-j+1
+  }
+  n=n+1
+  lf=lf-1
+}
+
+n<-1
+r<-1
+while(r<length(playerDataFrame)){
+  playerDataFrame[r]<-str_split(playerDataFrame[r], "\\|")
+  r<-r+1
+}
+
+n<-1
+r<-1
+while(r<length(playerDataFrame)){
+  ratingsDataFram[r]<-str_split(ratingsDataFram[r], "\\|")
+  r<-r+1
+}
+
+
+#Trying to display playerDataFrame and ratingsDataFram was giving me error. Upon 
+#google search, i realize they were still just list of strings and characters
+# the as.data.frame(do.call(rbind, playerDataFrame)) would help me convert them into
+#data frames that I can then manipulate
+
+playerDataFrame<-as.data.frame(do.call(rbind, playerDataFrame))
+ratingsDataFram<-as.data.frame(do.call(rbind, ratingsDataFram))
+
+ratingsDataFram <- ratingsDataFram %>%
+  mutate(PlayerNumber = row_number())
+
+
+playerDataFrame <- playerDataFrame %>%
+  mutate(V1 = as.integer(V1))
+
+combinedData <- playerDataFrame %>%
+  left_join(
+    ratingsDataFram,
+    by = c("V1" = "PlayerNumber")
+  )
+
+selectiveData<-combinedData|> select('Name' = V2.x, 'Total Points'=V3.x, 'State' = V1.y, 'federation ID and Average' = V2.y)
+ datatable(selectiveData)
+```
