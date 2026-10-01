@@ -1,0 +1,50 @@
+---
+title: "Assignment 5A: Airline Delays"
+author: "Mubin Ejaz"
+format: html
+editor: visual
+---
+
+## Approach
+
+We are given an image which shows two flight information for two flights. Information provided is just departing state, destination, number of flights that on time and number of flights that are delayed.\
+\
+I plan to use ***ocr_data*** to extract the image I screen shotted from assignment. It's part of ***tesseract*** package, it reads in an image and extract the data from it.
+
+## Code Chunk I tried
+
+```{r loading libraries}
+library(knitr)
+library(dplyr)
+library(tidyverse)
+library(tesseract)
+
+```
+
+```{r}
+df<-ocr_data("FlightDelays.png")
+write_csv(df, "FlightDelays.csv")
+```
+
+Simple data extraction and outputting to FlightDelays.csv gave me a lots of untidy data. All the data has been extracted to one single column and second and third column is just garbage (probably image formatting.\
+I will be using select and saving the useful data to a new dataframe, and then formatting and tidying it using dplyr and tidyr. I'll also try to use proper formatting that I read in chapter 4.
+
+Some of the functions I'll be trying:\
+\
+**pivot_wider()\
+pivot_longer()\
+str_extract()\
+str_detect()\
+select()\
+filter()\
+mutate()\
+str_replace() / str_replace_all()\
+as.numeric()\
+separate()\
+arrange()\
+group_by()\
+summarise()**\
+\
+I did have chat suggest some useful functions I'd be needing to manipulate text/csv file. I predict I'll be having a lots of fun.\
+\
+Eventually, after I've plotted the given tidy data, I'd conclude my observations.
