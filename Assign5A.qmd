@@ -1,0 +1,101 @@
+---
+title: "Assignment 5A: Airline Delays"
+author: "Mubin Ejaz"
+format: html
+editor: visual
+---
+
+## CodeBase
+
+I had decided to read in the image and extract data to continue but ended up wasting so much time.
+
+At the end I did have to take ChatGPT's advice and just save the data in a csv and read it. That way it was much cleaner to read, plot, analyse, and conclude.
+
+## Code Chunk I tried
+
+```{r loading libraries}
+library(knitr)
+library(dplyr)
+library(tidyverse)
+library(tesseract)
+
+```
+
+```{r}
+df2<-read_csv("5A.csv")
+
+airline_tidy <- df2 |>
+  pivot_longer(
+    cols = `Los Angeles`:Seattle,
+    names_to = "Destination",
+    values_to = "Flights"
+  )
+airline_tidy
+
+# Using pivot_longer seemed easier to manipulate the data. 
+
+
+```
+
+```{r}
+totals <- airline_tidy |>
+  group_by(Airline, Destination) |>
+  summarise(
+    Total = sum(Flights),
+    .groups = "drop"
+  )
+totals
+
+```
+
+```{r}
+delays <- airline_tidy |>
+  filter(Status == "delayed")
+
+
+```
+
+```{r}
+delay_rates <- airline_tidy |>
+  group_by(Airline, Destination) |>
+  summarise(
+    Total = sum(Flights),
+    Delayed = sum(Flights[Status == "delayed"]),
+    Delay_Rate = Delayed / Total,
+    .groups = "drop"
+  )
+
+```
+
+```{r}
+overall <- airline_tidy |>
+  group_by(Airline) |>
+  summarise(
+    Total_Flights = sum(Flights),
+    Delayed_Flights = sum(Flights[Status == "delayed"]),
+    Delay_Rate = Delayed_Flights / Total_Flights * 100,
+    .groups = "drop"
+  )
+ggplot(delay_rates,
+       aes(x = Destination, y = Delay_Rate, fill = Airline)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Arrival Delay Rates by Airline and Destination",
+    x = "Destination",
+    y = "Delay Rate (%)"
+  )
+```
+
+```{r}
+write_csv(overall, "output_5A.csv")
+```
+
+Simple data extraction and outputting to FlightDelays.csv gave me a lots of untidy data. All the data has been extracted to one single column and second and third column is just garbage (probably image formatting.
+
+**Analysis:**
+
+I grouped the data by destination and airlines. Calculated the total number of flights. Also calculated the delayed flights. That helped me calculate the delay rate (# of delayed flights/total number of flights). I did need LLM help in doing so, as I had already taken so long and wasted time in trying to extract and manipulate the image.\
+\
+Conclusion:\
+Alaska airline had 501 delay flights, with a delay rate of 13.27. AMWest had 787 delayed flight but the delay rate was much smaller, 10.89.\
+I would lean more towards taking Alaska airline.
