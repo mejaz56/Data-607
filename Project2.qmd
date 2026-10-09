@@ -1,0 +1,121 @@
+---
+title: "Project 2"
+author: Mubin Ejaz
+format: html
+editor: visual
+---
+
+## Approach
+
+I have chosen three datasets for my Project 2. \
+1) Average US Tuition from 2004 to 2016, from *tidytuesday.com*\
+2) Mortality Rate of certain diseases globally 1990-2016 (from discussion board by Ummay Rukiya)\
+3) Life Expectancy of female at birth, (also from world bank, when I looked at the data that Ummay mentioned, I looked at more data that I was interested in)\
+4) Life Expectancy of Male at birth (Extra data I would be looking at)\
+\
+In this approach part of the project, I plan to only read these three datasets as raw data, pivot long and output.
+
+Reading in Average US tuition from 2004 - 2016 and turning wide format to long format. Also outputing to a csv file to see how the semi clean data is looking
+
+```{r}
+
+library(tidyr)
+library(tidyverse)
+
+library(dplyr)
+
+
+# Import raw data
+
+raw_data_avg_tuition <- read.csv("us_avg_tuition.csv")
+
+# Reshape to tidy format
+
+raw_data_avg_tuition <- raw_data |>
+  pivot_longer(2:13,
+    names_to  = "Years",
+    values_to = "income"
+
+  ) |>
+  rename_with(tolower) |>
+             drop_na()
+overall_AvgTuition<- raw_data_avg_tuition |> 
+  mutate(years=as.numeric(substr(years,2,5)))
+
+overall_AvgTuition<-overall_AvgTuition |>
+                    mutate(income=as.numeric(gsub("[,$]", "", income)))
+write.csv(overall_AvgTuition, "CleanedUP_Avg_Tuition.csv")
+
+```
+
+Reading in Mortality Rate and turning it from wide to long format. Also outputing to a csv file to see how the semi clean data is looking
+
+```{r}
+
+raw_data_global_mortality<- read.csv("global_mortalityshareofdeathsbycause2016.csv")
+
+tidy_data2 <- raw_data_global_mortality |>
+  
+  pivot_longer(4:last_col(),
+               
+               names_to  = "Disease",
+               
+               values_to = "Number Of Deaths"
+               
+  ) |>
+  
+  rename_with(tolower) |>
+  
+  drop_na()
+
+write.csv(tidy_data2,"Cleanedup_MortalityRate.csv")
+
+```
+
+Reading in Life Expectancy of women and turning wide format to long. Also outputing to a csv file to see how the semi clean data is looking
+
+```{r}
+
+
+raw_data_life_expectancy_female<- read.csv("API_LifeExpectancy_F.csv")
+
+tidy_data2 <- raw_data_life_expectancy_female |>
+  
+  pivot_longer(5:last_col(),
+               
+               names_to  = "Year",
+               
+               values_to = "Expected age to die"
+               
+  ) |>
+  
+  rename_with(tolower) |>
+  
+  drop_na()
+write.csv(tidy_data2,"CleanedUpLifeExpectancy_Female.csv")
+
+
+
+```
+
+Reading in Life Expectancy of men and pivoting long. Also outputing to a csv file to see how the semi clean data is looking
+
+```{r}
+raw_data_life_expectancy_male<- read.csv("API_LifeExpectancyM.csv")
+
+tidy_data2 <- raw_data_life_expectancy_male |>
+  
+  pivot_longer(5:last_col(),
+               
+               names_to  = "Year",
+               
+               values_to = "Expected age to die"
+               
+  ) |>
+  
+  rename_with(tolower) |>
+  
+  drop_na()
+write.csv(tidy_data2,"CleanedUpLifeExpectancy_Male.csv")
+
+```
