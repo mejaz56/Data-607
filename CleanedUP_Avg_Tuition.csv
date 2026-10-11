@@ -1,0 +1,601 @@
+"state","years","tuition"
+"Alabama",2004,5683
+"Alabama",2005,5841
+"Alabama",2006,5753
+"Alabama",2007,6008
+"Alabama",2008,6475
+"Alabama",2009,7189
+"Alabama",2010,8071
+"Alabama",2011,8452
+"Alabama",2012,9098
+"Alabama",2013,9359
+"Alabama",2014,9496
+"Alabama",2015,9751
+"Alaska",2004,4328
+"Alaska",2005,4633
+"Alaska",2006,4919
+"Alaska",2007,5070
+"Alaska",2008,5075
+"Alaska",2009,5455
+"Alaska",2010,5759
+"Alaska",2011,5762
+"Alaska",2012,6026
+"Alaska",2013,6012
+"Alaska",2014,6149
+"Alaska",2015,6571
+"Arizona",2004,5138
+"Arizona",2005,5416
+"Arizona",2006,5481
+"Arizona",2007,5682
+"Arizona",2008,6058
+"Arizona",2009,7263
+"Arizona",2010,8840
+"Arizona",2011,9967
+"Arizona",2012,10134
+"Arizona",2013,10296
+"Arizona",2014,10414
+"Arizona",2015,10646
+"Arkansas",2004,5772
+"Arkansas",2005,6082
+"Arkansas",2006,6232
+"Arkansas",2007,6415
+"Arkansas",2008,6417
+"Arkansas",2009,6627
+"Arkansas",2010,6901
+"Arkansas",2011,7029
+"Arkansas",2012,7287
+"Arkansas",2013,7408
+"Arkansas",2014,7606
+"Arkansas",2015,7867
+"California",2004,5286
+"California",2005,5528
+"California",2006,5335
+"California",2007,5672
+"California",2008,5898
+"California",2009,7259
+"California",2010,8194
+"California",2011,9436
+"California",2012,9361
+"California",2013,9274
+"California",2014,9187
+"California",2015,9270
+"Colorado",2004,4704
+"Colorado",2005,5407
+"Colorado",2006,5596
+"Colorado",2007,6227
+"Colorado",2008,6284
+"Colorado",2009,6948
+"Colorado",2010,7748
+"Colorado",2011,8316
+"Colorado",2012,8793
+"Colorado",2013,9293
+"Colorado",2014,9299
+"Colorado",2015,9748
+"Connecticut",2004,7984
+"Connecticut",2005,8249
+"Connecticut",2006,8368
+"Connecticut",2007,8678
+"Connecticut",2008,8721
+"Connecticut",2009,9371
+"Connecticut",2010,9827
+"Connecticut",2011,9736
+"Connecticut",2012,10037
+"Connecticut",2013,10453
+"Connecticut",2014,10664
+"Connecticut",2015,11397
+"Delaware",2004,8353
+"Delaware",2005,8611
+"Delaware",2006,8682
+"Delaware",2007,8946
+"Delaware",2008,8995
+"Delaware",2009,9987
+"Delaware",2010,10534
+"Delaware",2011,11026
+"Delaware",2012,11363
+"Delaware",2013,11503
+"Delaware",2014,11515
+"Delaware",2015,11676
+"Florida",2004,3848
+"Florida",2005,3924
+"Florida",2006,3888
+"Florida",2007,3879
+"Florida",2008,4150
+"Florida",2009,4783
+"Florida",2010,5511
+"Florida",2011,5941
+"Florida",2012,6495
+"Florida",2013,6452
+"Florida",2014,6345
+"Florida",2015,6360
+"Georgia",2004,4298
+"Georgia",2005,4492
+"Georgia",2006,4584
+"Georgia",2007,4790
+"Georgia",2008,4831
+"Georgia",2009,5550
+"Georgia",2010,6428
+"Georgia",2011,7709
+"Georgia",2012,7853
+"Georgia",2013,7992
+"Georgia",2014,8063
+"Georgia",2015,8447
+"Hawaii",2004,4267
+"Hawaii",2005,4264
+"Hawaii",2006,4957
+"Hawaii",2007,5748
+"Hawaii",2008,6318
+"Hawaii",2009,7356
+"Hawaii",2010,8164
+"Hawaii",2011,8840
+"Hawaii",2012,8972
+"Hawaii",2013,9270
+"Hawaii",2014,9713
+"Hawaii",2015,10175
+"Idaho",2004,4525
+"Idaho",2005,4790
+"Idaho",2006,4874
+"Idaho",2007,5021
+"Idaho",2008,5004
+"Idaho",2009,5415
+"Idaho",2010,5835
+"Idaho",2011,6002
+"Idaho",2012,6239
+"Idaho",2013,6462
+"Idaho",2014,6610
+"Idaho",2015,6818
+"Illinois",2004,8183
+"Illinois",2005,8444
+"Illinois",2006,9450
+"Illinois",2007,10425
+"Illinois",2008,10872
+"Illinois",2009,11536
+"Illinois",2010,12008
+"Illinois",2011,12285
+"Illinois",2012,12675
+"Illinois",2013,12853
+"Illinois",2014,12813
+"Illinois",2015,13189
+"Indiana",2004,7368
+"Indiana",2005,7517
+"Indiana",2006,7687
+"Indiana",2007,7877
+"Indiana",2008,7836
+"Indiana",2009,8470
+"Indiana",2010,8744
+"Indiana",2011,8813
+"Indiana",2012,9078
+"Indiana",2013,9119
+"Indiana",2014,9049
+"Indiana",2015,9120
+"Iowa",2004,6813
+"Iowa",2005,6863
+"Iowa",2006,6919
+"Iowa",2007,7124
+"Iowa",2008,6980
+"Iowa",2009,7438
+"Iowa",2010,7832
+"Iowa",2011,7988
+"Iowa",2012,8157
+"Iowa",2013,8007
+"Iowa",2014,7868
+"Iowa",2015,7877
+"Kansas",2004,5345
+"Kansas",2005,5739
+"Kansas",2006,6114
+"Kansas",2007,6583
+"Kansas",2008,6521
+"Kansas",2009,6995
+"Kansas",2010,7254
+"Kansas",2011,7310
+"Kansas",2012,7583
+"Kansas",2013,7896
+"Kansas",2014,8270
+"Kansas",2015,8530
+"Kentucky",2004,5640
+"Kentucky",2005,6142
+"Kentucky",2006,6760
+"Kentucky",2007,7194
+"Kentucky",2008,7388
+"Kentucky",2009,7886
+"Kentucky",2010,8231
+"Kentucky",2011,8423
+"Kentucky",2012,8815
+"Kentucky",2013,8889
+"Kentucky",2014,9223
+"Kentucky",2015,9567
+"Louisiana",2004,4453
+"Louisiana",2005,4513
+"Louisiana",2006,4421
+"Louisiana",2007,4388
+"Louisiana",2008,4419
+"Louisiana",2009,4745
+"Louisiana",2010,5181
+"Louisiana",2011,5542
+"Louisiana",2012,6120
+"Louisiana",2013,6748
+"Louisiana",2014,7337
+"Louisiana",2015,7871
+"Maine",2004,7058
+"Maine",2005,7408
+"Maine",2006,7759
+"Maine",2007,8403
+"Maine",2008,8764
+"Maine",2009,9469
+"Maine",2010,9792
+"Maine",2011,9894
+"Maine",2012,9753
+"Maine",2013,9594
+"Maine",2014,9560
+"Maine",2015,9573
+"Maryland",2004,8531
+"Maryland",2005,8717
+"Maryland",2006,8463
+"Maryland",2007,8380
+"Maryland",2008,8020
+"Maryland",2009,8285
+"Maryland",2010,8470
+"Maryland",2011,8410
+"Maryland",2012,8552
+"Maryland",2013,8663
+"Maryland",2014,8697
+"Maryland",2015,9163
+"Massachusetts",2004,8863
+"Massachusetts",2005,8959
+"Massachusetts",2006,8893
+"Massachusetts",2007,9036
+"Massachusetts",2008,8939
+"Massachusetts",2009,10239
+"Massachusetts",2010,10386
+"Massachusetts",2011,10738
+"Massachusetts",2012,11093
+"Massachusetts",2013,10981
+"Massachusetts",2014,10987
+"Massachusetts",2015,11588
+"Michigan",2004,7931
+"Michigan",2005,8668
+"Michigan",2006,8998
+"Michigan",2007,9737
+"Michigan",2008,9906
+"Michigan",2009,10817
+"Michigan",2010,11095
+"Michigan",2011,11452
+"Michigan",2012,11660
+"Michigan",2013,11851
+"Michigan",2014,11618
+"Michigan",2015,11991
+"Minnesota",2004,8144
+"Minnesota",2005,8481
+"Minnesota",2006,8817
+"Minnesota",2007,8934
+"Minnesota",2008,9024
+"Minnesota",2009,9739
+"Minnesota",2010,10276
+"Minnesota",2011,10583
+"Minnesota",2012,10793
+"Minnesota",2013,10691
+"Minnesota",2014,10582
+"Minnesota",2015,10831
+"Mississippi",2004,5029
+"Mississippi",2005,5110
+"Mississippi",2006,5219
+"Mississippi",2007,5450
+"Mississippi",2008,5367
+"Mississippi",2009,5488
+"Mississippi",2010,5795
+"Mississippi",2011,5993
+"Mississippi",2012,6416
+"Mississippi",2013,6707
+"Mississippi",2014,6870
+"Mississippi",2015,7147
+"Missouri",2004,7477
+"Missouri",2005,7659
+"Missouri",2006,7653
+"Missouri",2007,7842
+"Missouri",2008,7842
+"Missouri",2009,7996
+"Missouri",2010,7959
+"Missouri",2011,8118
+"Missouri",2012,8276
+"Missouri",2013,8268
+"Missouri",2014,8409
+"Missouri",2015,8564
+"Montana",2004,5630
+"Montana",2005,6007
+"Montana",2006,6166
+"Montana",2007,6075
+"Montana",2008,5789
+"Montana",2009,6079
+"Montana",2010,6143
+"Montana",2011,6212
+"Montana",2012,6412
+"Montana",2013,6360
+"Montana",2014,6301
+"Montana",2015,6351
+"Nebraska",2004,5947
+"Nebraska",2005,6476
+"Nebraska",2006,6132
+"Nebraska",2007,6394
+"Nebraska",2008,6462
+"Nebraska",2009,6909
+"Nebraska",2010,7225
+"Nebraska",2011,7295
+"Nebraska",2012,7483
+"Nebraska",2013,7473
+"Nebraska",2014,7348
+"Nebraska",2015,7608
+"Nevada",2004,3621
+"Nevada",2005,3687
+"Nevada",2006,4275
+"Nevada",2007,4523
+"Nevada",2008,4771
+"Nevada",2009,5035
+"Nevada",2010,5822
+"Nevada",2011,6384
+"Nevada",2012,6656
+"Nevada",2013,6525
+"Nevada",2014,6438
+"Nevada",2015,6667
+"New Hampshire",2004,10188
+"New Hampshire",2005,10484
+"New Hampshire",2006,10704
+"New Hampshire",2007,11111
+"New Hampshire",2008,11168
+"New Hampshire",2009,12273
+"New Hampshire",2010,13077
+"New Hampshire",2011,14263
+"New Hampshire",2012,15224
+"New Hampshire",2013,14969
+"New Hampshire",2014,14756
+"New Hampshire",2015,15160
+"New Jersey",2004,10054
+"New Jersey",2005,10505
+"New Jersey",2006,10943
+"New Jersey",2007,11427
+"New Jersey",2008,11661
+"New Jersey",2009,12338
+"New Jersey",2010,12752
+"New Jersey",2011,12708
+"New Jersey",2012,12935
+"New Jersey",2013,12998
+"New Jersey",2014,13027
+"New Jersey",2015,13303
+"New Mexico",2004,4926
+"New Mexico",2005,5187
+"New Mexico",2006,4757
+"New Mexico",2007,4867
+"New Mexico",2008,4904
+"New Mexico",2009,5304
+"New Mexico",2010,5614
+"New Mexico",2011,5741
+"New Mexico",2012,5915
+"New Mexico",2013,6089
+"New Mexico",2014,6166
+"New Mexico",2015,6355
+"New York",2004,6235
+"New York",2005,6114
+"New York",2006,5912
+"New York",2007,5816
+"New York",2008,5556
+"New York",2009,6361
+"New York",2010,6342
+"New York",2011,6554
+"New York",2012,6836
+"New York",2013,7076
+"New York",2014,7306
+"New York",2015,7644
+"North Carolina",2004,4493
+"North Carolina",2005,4464
+"North Carolina",2006,4770
+"North Carolina",2007,4933
+"North Carolina",2008,4764
+"North Carolina",2009,5030
+"North Carolina",2010,5827
+"North Carolina",2011,6010
+"North Carolina",2012,6459
+"North Carolina",2013,6657
+"North Carolina",2014,6685
+"North Carolina",2015,6973
+"North Dakota",2004,5804
+"North Dakota",2005,6197
+"North Dakota",2006,6464
+"North Dakota",2007,6649
+"North Dakota",2008,6626
+"North Dakota",2009,7021
+"North Dakota",2010,7191
+"North Dakota",2011,7248
+"North Dakota",2012,7298
+"North Dakota",2013,7431
+"North Dakota",2014,7527
+"North Dakota",2015,7688
+"Ohio",2004,10378
+"Ohio",2005,10186
+"Ohio",2006,9903
+"Ohio",2007,9695
+"Ohio",2008,9194
+"Ohio",2009,9425
+"Ohio",2010,9913
+"Ohio",2011,9980
+"Ohio",2012,10175
+"Ohio",2013,10157
+"Ohio",2014,10104
+"Ohio",2015,10196
+"Oklahoma",2004,4454
+"Oklahoma",2005,4639
+"Oklahoma",2006,5198
+"Oklahoma",2007,5721
+"Oklahoma",2008,6120
+"Oklahoma",2009,6008
+"Oklahoma",2010,6294
+"Oklahoma",2011,6413
+"Oklahoma",2012,6670
+"Oklahoma",2013,6726
+"Oklahoma",2014,7094
+"Oklahoma",2015,7450
+"Oregon",2004,6579
+"Oregon",2005,6632
+"Oregon",2006,6539
+"Oregon",2007,6812
+"Oregon",2008,6769
+"Oregon",2009,7653
+"Oregon",2010,8138
+"Oregon",2011,8445
+"Oregon",2012,8658
+"Oregon",2013,8786
+"Oregon",2014,8949
+"Oregon",2015,9371
+"Pennsylvania",2004,10394
+"Pennsylvania",2005,10556
+"Pennsylvania",2006,10615
+"Pennsylvania",2007,11219
+"Pennsylvania",2008,11233
+"Pennsylvania",2009,11929
+"Pennsylvania",2010,12404
+"Pennsylvania",2011,12766
+"Pennsylvania",2012,12893
+"Pennsylvania",2013,13079
+"Pennsylvania",2014,13157
+"Pennsylvania",2015,13395
+"Rhode Island",2004,7476
+"Rhode Island",2005,7864
+"Rhode Island",2006,7959
+"Rhode Island",2007,8273
+"Rhode Island",2008,8384
+"Rhode Island",2009,9423
+"Rhode Island",2010,10201
+"Rhode Island",2011,10578
+"Rhode Island",2012,11376
+"Rhode Island",2013,11132
+"Rhode Island",2014,10977
+"Rhode Island",2015,11390
+"South Carolina",2004,8330
+"South Carolina",2005,9020
+"South Carolina",2006,9280
+"South Carolina",2007,9591
+"South Carolina",2008,9908
+"South Carolina",2009,10550
+"South Carolina",2010,11016
+"South Carolina",2011,10940
+"South Carolina",2012,11192
+"South Carolina",2013,11407
+"South Carolina",2014,11470
+"South Carolina",2015,11816
+"South Dakota",2004,5479
+"South Dakota",2005,5610
+"South Dakota",2006,5827
+"South Dakota",2007,6122
+"South Dakota",2008,6182
+"South Dakota",2009,6684
+"South Dakota",2010,6916
+"South Dakota",2011,7176
+"South Dakota",2012,7696
+"South Dakota",2013,7809
+"South Dakota",2014,7713
+"South Dakota",2015,8055
+"Tennessee",2004,5426
+"Tennessee",2005,5817
+"Tennessee",2006,5832
+"Tennessee",2007,6147
+"Tennessee",2008,6169
+"Tennessee",2009,6758
+"Tennessee",2010,7140
+"Tennessee",2011,7574
+"Tennessee",2012,7996
+"Tennessee",2013,8210
+"Tennessee",2014,8941
+"Tennessee",2015,9263
+"Texas",2004,6395
+"Texas",2005,6577
+"Texas",2006,7019
+"Texas",2007,7390
+"Texas",2008,7507
+"Texas",2009,8121
+"Texas",2010,8477
+"Texas",2011,8507
+"Texas",2012,8692
+"Texas",2013,8705
+"Texas",2014,8852
+"Texas",2015,9117
+"Utah",2004,4125
+"Utah",2005,4376
+"Utah",2006,4475
+"Utah",2007,4650
+"Utah",2008,4638
+"Utah",2009,5068
+"Utah",2010,5381
+"Utah",2011,5599
+"Utah",2012,5846
+"Utah",2013,6042
+"Utah",2014,6171
+"Utah",2015,6363
+"Vermont",2004,11067
+"Vermont",2005,11295
+"Vermont",2006,11473
+"Vermont",2007,12013
+"Vermont",2008,12305
+"Vermont",2009,13316
+"Vermont",2010,13655
+"Vermont",2011,13833
+"Vermont",2012,14089
+"Vermont",2013,14267
+"Vermont",2014,14501
+"Vermont",2015,14993
+"Virginia",2004,7030
+"Virginia",2005,7356
+"Virginia",2006,7689
+"Virginia",2007,8029
+"Virginia",2008,8225
+"Virginia",2009,8795
+"Virginia",2010,9643
+"Virginia",2011,10072
+"Virginia",2012,10314
+"Virginia",2013,10590
+"Virginia",2014,11202
+"Virginia",2015,11819
+"Washington",2004,6192
+"Washington",2005,6415
+"Washington",2006,6649
+"Washington",2007,6858
+"Washington",2008,6980
+"Washington",2009,8113
+"Washington",2010,8973
+"Washington",2011,10029
+"Washington",2012,11037
+"Washington",2013,11045
+"Washington",2014,10703
+"Washington",2015,10288
+"West Virginia",2004,4575
+"West Virginia",2005,4728
+"West Virginia",2006,4886
+"West Virginia",2007,5048
+"West Virginia",2008,5107
+"West Virginia",2009,5519
+"West Virginia",2010,5721
+"West Virginia",2011,5848
+"West Virginia",2012,6130
+"West Virginia",2013,6388
+"West Virginia",2014,6698
+"West Virginia",2015,7171
+"Wisconsin",2004,6575
+"Wisconsin",2005,6871
+"Wisconsin",2006,7086
+"Wisconsin",2007,7348
+"Wisconsin",2008,7373
+"Wisconsin",2009,7945
+"Wisconsin",2010,8441
+"Wisconsin",2011,8659
+"Wisconsin",2012,9052
+"Wisconsin",2013,8931
+"Wisconsin",2014,8785
+"Wisconsin",2015,8815
+"Wyoming",2004,4086
+"Wyoming",2005,4188
+"Wyoming",2006,4122
+"Wyoming",2007,4072
+"Wyoming",2008,3929
+"Wyoming",2009,4129
+"Wyoming",2010,4299
+"Wyoming",2011,4357
+"Wyoming",2012,4456
+"Wyoming",2013,4499
+"Wyoming",2014,4654
+"Wyoming",2015,4891

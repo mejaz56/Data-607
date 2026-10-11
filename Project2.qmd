@@ -7,53 +7,132 @@ editor: visual
 
 ## Approach
 
-I have chosen three datasets for my Project 2. \
-1) Average US Tuition from 2004 to 2016, from *tidytuesday.com*\
-2) Mortality Rate of certain diseases globally 1990-2016 (from discussion board by Ummay Rukiya)\
-3) Life Expectancy of female at birth, (also from world bank, when I looked at the data that Ummay mentioned, I looked at more data that I was interested in)\
-4) Life Expectancy of Male at birth (Extra data I would be looking at)\
+I have chosen three datasets for my Project 2.\
+1) **Average US Tuition from 2004 to 2016**, from *tidytuesday.com*
+
 \
-In this approach part of the project, I plan to only read these three datasets as raw data, pivot long and output.
+2) **Mortality Rate of certain diseases globally 1990-2016** (from discussion board by Ummay Rukiya)
 
-Reading in Average US tuition from 2004 - 2016 and turning wide format to long format. Also outputing to a csv file to see how the semi clean data is looking
+I did chose this through her board, but she wants to inquire about the life expectancy, which is my 3 & 4th dataset. I hope this is still acceptable. \
+\
+3) **Life Expectancy of female at birth**, (also from world bank, when I looked at the data that Ummay mentioned, I looked at more data that I was interested in)\
+4) **Life Expectancy of Male** at birth (Extra data I would be looking at)
 
-```{r}
+I know that it's 4 datasets instead of 3 but Life Expectancy of Male and Female were just kind of from same location and I wanted to see both of their life expectancy and then compare them at the end with global mortality rate if possible.\
 
+```{r loading all the necessary packages}
 library(tidyr)
 library(tidyverse)
-
 library(dplyr)
+library("DT")
+library(plotly)
+library(htmltools)
+library(crosstalk)
+```
 
+In the Next Chunk, I'm reading all the data CSV in. I uploaded the datasets in github, and that's the path you see.\
 
-# Import raw data
+```{r Reading all the data csv in}
 
-raw_data_avg_tuition <- read.csv("us_avg_tuition.csv")
+raw_data_avg_tuition <- read.csv("https://raw.githubusercontent.com/mejaz56/Data-607/refs/heads/Project-2/us_avg_tuition.csv")
+raw_data_global_mortality<- read.csv("https://raw.githubusercontent.com/mejaz56/Data-607/refs/heads/Project-2/global_mortalityshareofdeathsbycause2016.csv")
+raw_data_life_expectancy_female<- read.csv("https://raw.githubusercontent.com/mejaz56/Data-607/refs/heads/Project-2/API_LifeExpectancy_F.csv")
+raw_data_life_expectancy_male<- read.csv("https://raw.githubusercontent.com/mejaz56/Data-607/refs/heads/Project-2/API_LifeExpectancyM.csv")
+  
+```
 
-# Reshape to tidy format
+## 1) **Average US Tuition from 2004 to 2016**
 
-raw_data_avg_tuition <- raw_data |>
+#### from *tidytuesday.com*
+
+In the following chunk. I have left the raw data intact and modifying the new datasets, i.e. tidy_data datasets. raw_data_avg_tuition, remain intact just as was required in the problem requirements.
+
+```{r}
+# Import raw data  
+# Reshape to tidy format, transorming the wide format to long format 
+# Also, changing all colummns names to lower case by rename_with(tolower)
+# mutate(years=as.numeric(substr(years,2,5))) takes the years column and 
+# removes the $ sign by only taking the digits at place 2 upto 5 and converting
+# it to numeric. 
+# here, we're also using drop_na() to drop any NA. I did use colSums(is.na
+# (raw_data_avg_tuition)) before I did anything and there were no NA. 
+
+tidy_data1 <- raw_data_avg_tuition |>
   pivot_longer(2:13,
     names_to  = "Years",
-    values_to = "income"
+    values_to = "Tuition"
 
   ) |>
   rename_with(tolower) |>
              drop_na()
-overall_AvgTuition<- raw_data_avg_tuition |> 
+overall_AvgTuition<- tidy_data1 |> 
   mutate(years=as.numeric(substr(years,2,5)))
 
 overall_AvgTuition<-overall_AvgTuition |>
-                    mutate(income=as.numeric(gsub("[,$]", "", income)))
-write.csv(overall_AvgTuition, "CleanedUP_Avg_Tuition.csv")
+                    mutate(tuition=as.numeric(gsub("[,$]", "", tuition)))
+write.csv(overall_AvgTuition, "CleanedUP_Avg_Tuition.csv", row.names = FALSE)
 
 ```
 
-Reading in Mortality Rate and turning it from wide to long format. Also outputing to a csv file to see how the semi clean data is looking
+# Analysis
 
 ```{r}
 
-raw_data_global_mortality<- read.csv("global_mortalityshareofdeathsbycause2016.csv")
+#Summarizing data by first grouping them by year and sumarizing the avg tuition 
+#by years of the entire country in those years. Also using .groups="drop" to degroup
+tuition_by_year <- overall_AvgTuition |>
+                    group_by(years) |>
+                    summarize(av_tuition=mean(tuition), 
+                              .groups = "drop")
 
+# I Want to see the rate of change of tuition year to year, and I will be using lag(av_tuition) function, which is essentially a window function
+# which calculates previous rows average.  
+tuition_by_year <- tuition_by_year |>
+  arrange(years) |>
+  mutate(
+    dollar_change = av_tuition - lag(av_tuition),
+    rate_of_change = (dollar_change / lag(av_tuition)) * 100
+  ) 
+
+#this time I am grouped the data by state, and summarized their tuition in a 
+#given year.  
+tuition_by_state <- overall_AvgTuition |>
+                            group_by(state) |>
+                            summarise(av_tuition=mean(tuition),
+                                      .groups="drop")
+ggplot(tuition_by_year, mapping=aes(x=years, av_tuition))+
+  geom_line()+
+  geom_point()+
+  labs(title="Average US Tuition over Time",
+       x="years", 
+       y="Average Tuition in $")
+
+
+
+# here, R kept setting the grap with states in alphabetical order, and I 
+# wanted in higher to lower order. So by LLM suggestion, I used y=reorder(state, 
+# av_tuition).  
+ggplot(tuition_by_state, mapping =aes(x=av_tuition, y=reorder(state, av_tuition)))+
+  geom_col()+
+  labs(title="Average tuition by state", 
+       x="Average tution in $", 
+       y="State")
+
+```
+
+## Conclusion:
+
+We can see that from 2004 to 2007, the college tuition rates have gone up linearly, with a almost a constant rate of change. The rate of change, seemed to drop from 2007 to 2008, maybe due to the great recession that we were in. However, right after that, the tuition increased exponentially. but seemed to again leveled out to be linear from 2014 to 2016.
+
+We also notice that accross usa, the most expensive state is Vermont, and cheapest is Wyoming. NY seems to also being among the cheapest when it comes to average tuition.
+
+## 2) **Mortality Rate of certain diseases globally 1990-2016**
+
+Reading in Mortality Rate and turning it from wide to long format. Also outputing to a csv file to see how the semi clean data is looking. We can see that the raw data, *raw_data_global_mortality,* has been kept intact (with the wide data format).
+
+```{r}
+#Introducing new dataframe so the original isn't modified. and pivoting longer
+#renaming all to lower case. Also dropping all the NA values 
 tidy_data2 <- raw_data_global_mortality |>
   
   pivot_longer(4:last_col(),
@@ -63,23 +142,112 @@ tidy_data2 <- raw_data_global_mortality |>
                values_to = "Number Of Deaths"
                
   ) |>
-  
-  rename_with(tolower) |>
-  
+  rename_with(tolower) |> 
   drop_na()
 
-write.csv(tidy_data2,"Cleanedup_MortalityRate.csv")
+#formatting the untidy data to remove . and ... in disease column, using gsub.
+tidy_data2<-tidy_data2 |>
+            mutate(disease=gsub("([.])", " ", disease), 
+                   disease=trimws(disease))
+
+#only selecting relevant data and mutating number of deaths as integer. 
+relevant_data <-tidy_data2 |> 
+                select(country, year, disease, `number of deaths`) |>
+                mutate('number of deaths'= as.integer(`number of deaths`))
+
+
+write.csv(relevant_data,"Cleanedup_MortalityRate.csv", row.names = FALSE)
 
 ```
+
+# Analysis
+
+In this section, I only looked at 3 countries and deaths by disease trend since this data . I used summarise and group_by to look at the data from disease trend. The x-axis was readable because I explored this cool ***theme*** layer to angle the text on x axis by 45 degrees.
+
+```{r}
+#Summarizing data by first grouping them by year and sumarizing the avg tuition 
+#by years of the entire country in those years. Also using .groups="drop" to degroup
+deaths_by_disease <- tidy_data2 |>
+                    group_by(disease, country) |>
+                    summarise(
+    total_deaths = sum(`number of deaths`, na.rm = TRUE),
+    .groups = "drop"
+  )
+deaths_by_disease<- deaths_by_disease |> 
+                      mutate(`total_deaths`=as.integer(`total_deaths`))
+
+write.csv(deaths_by_disease,"Cleanedup_MortalityRate_byDisease.csv", row.names = FALSE)
+
+#using this cool theme layer to angle the text on x axis by 45 degrees. 
+deaths_by_disease |>
+  filter(country == "Afghanistan") |>
+  ggplot(aes(x = disease, y = total_deaths)) +
+  geom_col() +
+  labs(
+    title = "Deaths by Disease in Afghanistan",
+    x = "Disease",
+    y = "Total Deaths"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+deaths_by_disease |>
+  filter(country == "Pakistan") |>
+  ggplot(aes(x = disease, y = total_deaths)) +
+  geom_col() +
+  labs(
+    title = "Deaths by Disease in Pakistan",
+    x = "Disease",
+    y = "Total Deaths"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+deaths_by_disease |>
+  filter(country == "United States") |>
+  ggplot(aes(x = disease, y = total_deaths)) +
+  geom_col() +
+  labs(
+    title = "Deaths by Disease in United States",
+    x = "Disease",
+    y = "Total Deaths"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+```
+
+Accross the three countries, *Afghanistan, Pakistan, and United States, Cardiovascular diseases seemed to be the top cause of death. Coming in at #2 was Cancer.*
+
+In the following, I'll attempt to look at top 100 deadly causes of death since 1990.
+
+```{r}
+
+deaths_by_disease<-tidy_data2 |>
+  select(country, year, disease, `number of deaths`)
+
+#Slicing top 100 causes of death by disease
+
+datatable(deaths_by_disease|>slice_max(order_by = `number of deaths`, n=100))
+
+
+MaxDeaths<-deaths_by_disease|>slice_max(order_by = `number of deaths`, n=100)
+
+
+#Plotting the top deadly 100. 
+
+ggplot(MaxDeaths, aes(x=country, y=disease, color=`number of deaths`))+geom_boxplot()+labs(color = "Deaths", x = "country", y = "Disease")
+```
+
+## Conclusion:
+
+When we look at over all data, we see that most amount of deaths from 1990 happened in 1994 in Rawanda, about 82 people died of internal conflict. Other than that, cardiovascular disease remains the top killer throughout the global population.
+
+## 3) Life Expectancy of Women and Men (From Ummay)
 
 Reading in Life Expectancy of women and turning wide format to long. Also outputing to a csv file to see how the semi clean data is looking
 
 ```{r}
-
-
-raw_data_life_expectancy_female<- read.csv("API_LifeExpectancy_F.csv")
-
-tidy_data2 <- raw_data_life_expectancy_female |>
+#Preserving original data before pivoting longer.  
+tidy_data3 <- raw_data_life_expectancy_female |>
   
   pivot_longer(5:last_col(),
                
@@ -92,21 +260,40 @@ tidy_data2 <- raw_data_life_expectancy_female |>
   rename_with(tolower) |>
   
   drop_na()
-write.csv(tidy_data2,"CleanedUpLifeExpectancy_Female.csv")
+
+#Cleaning up data, converting year from char to numeric and taking away $ sign
+
+tidy_data3<- tidy_data3 |> 
+  mutate(year=as.numeric(substr(year,2,5)))
+
+#nomalizing names. 
+
+FewSelectedColumnsF<-tidy_data3 |>
+                    select("Country"=country.name, year, female_life_expectancy=`expected age to die`)
+
+write.csv(FewSelectedColumnsF,"CleanedUpLifeExpectancy_Female.csv", row.names = FALSE)
+yearly_pattern <- FewSelectedColumnsF |>
+  group_by(year) |>
+  summarise(
+    average_across_countries = mean(female_life_expectancy),
+    .groups = "drop"
+  )
 
 
 
+datatable(FewSelectedColumnsF|>slice_max(order_by = `female_life_expectancy`, n=100))
 ```
 
 Reading in Life Expectancy of men and pivoting long. Also outputing to a csv file to see how the semi clean data is looking
 
-```{r}
-raw_data_life_expectancy_male<- read.csv("API_LifeExpectancyM.csv")
+I also use left join to combing male expectancy data frame with female life expectancy throughout the year accross the globe to see the comparison. I end up slicing and looking closely at 3 countries, United States, Pakistan, and India.
 
-tidy_data2 <- raw_data_life_expectancy_male |>
+```{r}
+
+tidy_data4 <- raw_data_life_expectancy_male |>
   
   pivot_longer(5:last_col(),
-               
+              
                names_to  = "Year",
                
                values_to = "Expected age to die"
@@ -116,6 +303,71 @@ tidy_data2 <- raw_data_life_expectancy_male |>
   rename_with(tolower) |>
   
   drop_na()
-write.csv(tidy_data2,"CleanedUpLifeExpectancy_Male.csv")
 
+#Cleaning up data, converting year from char to numeric and taking away $ sign
+
+tidy_data4<- tidy_data4 |> 
+  mutate(year=as.numeric(substr(year,2,5)))
+
+FewSelectedColumnsM<-tidy_data4 |>
+                    select("Country"=country.name, year, male_life_expectancy=`expected age to die`)
+
+Comparison<- FewSelectedColumnsM |>
+              left_join(FewSelectedColumnsF, by = c("Country", "year"))
+
+ Comparison<-Comparison|>tidyr::pivot_longer(
+    cols = c(male_life_expectancy, female_life_expectancy),
+    names_to = "sex",
+    values_to = "life_expectancy"
+  ) 
+
+write.csv(Comparison,"CleanedUpLifeExpectancy_MaleVFemale.csv", row.names = FALSE)
+
+#Picking one country to see the trend in US
+SelectedYear <-Comparison|>
+              filter(Country=="United States") |>
+              select(year, sex, life_expectancy)
+#gaphing
+SelectedYear |>
+  ggplot(aes(x = sex, y = life_expectancy, fill = sex)) +
+  geom_boxplot() +
+  labs(
+    title = "Distribution of Life Expectancy by Sex in United States",
+    x = "Sex",
+    y = "Life Expectancy (years)"
+  ) +
+  theme_minimal()
+
+
+#Picking one country to see the trend in Bangladesh
+SelectedYear <-Comparison|>
+              filter(Country=="Bangladesh") |>
+              select(year, sex, life_expectancy)
+SelectedYear |>
+  ggplot(aes(x = sex, y = life_expectancy, fill = sex)) +
+  geom_boxplot() +
+  labs(
+    title = "Distribution of Life Expectancy by Sex in Bangladesh",
+    x = "Sex",
+    y = "Life Expectancy (years)"
+  ) +
+  theme_minimal()
+
+#Picking one country to see the trend in India
+SelectedYear <-Comparison|>
+              filter(Country=="India") |>
+              select(year, sex, life_expectancy)
+SelectedYear |>
+  ggplot(aes(x = sex, y = life_expectancy, fill = sex)) +
+  geom_boxplot() +
+  labs(
+    title = "Distribution of Life Expectancy by Sex in India",
+    x = "Sex",
+    y = "Life Expectancy (years)"
+  ) +
+  theme_minimal()
 ```
+
+# Conclusion:
+
+As expected, United States, where there's more facilities and better health care available, the life expectancy is a lot higher for both men and women than India and Bangladesh. Although Bangladesh and India are in the same region and kind of have same genetic makeup, India, again, has better health care and hence has a sligher better and higher life expectancy than Bangladesh.
