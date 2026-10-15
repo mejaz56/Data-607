@@ -1,0 +1,32 @@
+---
+title: "HTML and JSON"
+author: "Mubin Ejaz"
+format: html
+editor: visual
+---
+
+## Approach
+
+I chose mystery novels of my choice to be the three books I'll use (disclaimer: I have not read the books :)): \
+My chosen attributes are Title, Author, Publication year, Publisher, and ISBN #: \
+\
+1) Title: **The Silent Patient**\
+Author: Alex Michaelides\
+Publication year: 2019\
+Publisher: Celadon Books\
+ISBN: 978-1250301710\
+\
+2) Title: **The Cuckoo's Calling** \
+Author: Robert Galbraith (J.K. Rowling's Pseudonym)\
+Publication Year: 2013\
+PUblisher: Mulholland Books\
+ISBN: 978-0316206860\
+\
+3) Title: **The President is Missing\
+Authors:** James Patterson \
+Bill Clinton\
+Publication year: 2018\
+Publisher: Little, Brown and Company\
+ISBN: 978-0316412711\
+
+I've created HTML and JSON files. Will be playing around with R in CodeBase part of the homework.
