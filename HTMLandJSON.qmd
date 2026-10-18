@@ -1,0 +1,133 @@
+---
+title: "HTML and JSON"
+author: "Mubin Ejaz"
+format: html
+editor: visual
+---
+
+## CodeBase for HTML and JSON 
+
+I chose mystery novels of my choice to be the three books I'll use (disclaimer: I have not read the books :)):\
+My chosen attributes are Title, Author, Publication year, Publisher, and ISBN #:\
+\
+1) Title: **The Silent Patient**\
+Author: Alex Michaelides\
+Publication year: 2019\
+Publisher: Celadon Books\
+ISBN: 978-1250301710\
+\
+2) Title: **The Cuckoo's Calling**\
+Author: Robert Galbraith (J.K. Rowling's Pseudonym)\
+Publication Year: 2013\
+PUblisher: Mulholland Books\
+ISBN: 978-0316206860\
+\
+3) Title: **The President is Missing\
+Authors:** James Patterson\
+Bill Clinton\
+Publication year: 2018\
+Publisher: Little, Brown and Company\
+ISBN: 978-0316412711\
+
+I've created HTML and JSON files. Will be playing around with R in CodeBase part of the homework.
+
+```{r}
+library(rvest)
+library(DT)
+library(jsonlite)
+url<-"https://raw.githubusercontent.com/mejaz56/Data-607/HTML-and-JSON-Approach/Books.html"
+
+#function to cleanup the dataframes from mismatch cases, extra space, and commas
+my_function <- function(fname) {
+   cleandata <- trimws(fname)
+   cleandata <- tolower(cleandata)
+   cleandata <- gsub("[[:space:]]+", " ", cleandata)
+   return(cleandata)
+}
+
+#reading in html content
+html_content<-read_html(url)
+
+#extracting tables from html content
+tables<-html_content%>%html_table()
+
+#reading in JSON
+books <- fromJSON("Books.json")
+
+#converting the JSON data into dataframe
+JSON_df <- as.data.frame(books$Books)
+
+#converting html table content into a dataframe and saving the result
+html_df<- as.data.frame(tables[[1]])
+
+#saving a copy of both dataframes so I can manipulate the data 
+JSON_df_copy<-JSON_df
+html_df_copy<-html_df
+
+
+#cleaning up by calling the function to remove extra whitespaces and commas
+JSON_df_copy$Title<-my_function(JSON_df$Title)
+JSON_df_copy$Authors<- my_function(JSON_df$Authors)
+JSON_df_copy$Publisher<-my_function(JSON_df$Publisher)
+JSON_df_copy$`Publication Year`<-my_function(JSON_df$`Publication Year`)
+JSON_df_copy$ISBN <-my_function(JSON_df$ISBN)
+
+html_df_copy$Title<-my_function(html_df_copy$Title)
+html_df_copy$Author<- my_function(html_df_copy$Author)
+html_df_copy$Publisher<-my_function(html_df_copy$Publisher)
+html_df_copy$ISBN <-my_function(html_df_copy$ISBN)
+
+JSON_df_copy$Authors <- my_function(
+  gsub("[,;]", " ", JSON_df$Authors)
+)
+
+html_df_copy$Author <- my_function(
+  gsub("[,;]", " ", html_df$Author)
+)
+
+
+title<-JSON_df_copy$Title==html_df_copy$Title
+Author<-JSON_df_copy$Authors == html_df_copy$Author
+PY<-JSON_df$`Publication Year`==html_df$`Publication Year`
+Publisher<-JSON_df_copy$Publisher ==  html_df_copy$Publisher
+
+ISBN <- gsub("[-[:space:]]", "", JSON_df_copy$ISBN) ==
+        gsub("[-[:space:]]", "", html_df_copy$ISBN)
+
+
+```
+
+## *Presenting the result of comparison*
+
+(with the help of ChatGPT)
+
+```{r}
+
+comparison <- data.frame(
+  Attribute = c("Title", "Author", "Publication Year", "Publisher", "ISBN"),
+  Result = c(
+    paste(title, collapse = "  "),
+    paste(Author, collapse = "  "),
+    paste(PY, collapse = "  "),
+    paste(Publisher, collapse = "  "),
+    paste(ISBN, collapse = "  ")
+  ),
+  Meaning = c(
+    "All three titles match",
+    "All three authors match",
+    "All three years match",
+    "All three publishers match",
+    "All match"
+  )
+)
+
+knitr::kable(comparison, caption = "HTML and JSON Comparison")
+
+all.equal(JSON_df_copy, html_df_copy)
+
+
+```
+
+# Conclusion
+
+Instead of using all.equal, I used == and function to compare individual observation and the tables' contents. It gave me more control. I later did compare the data/tables by all.equal, the result did show that even if the content was identical, the all.equal gave me different result due to data types and column names.
