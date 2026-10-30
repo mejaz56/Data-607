@@ -6,13 +6,15 @@ Author: Mubin Ejaz
 description: Data 607, Assignment 7, Approach
 ---
 
-# Approach: 
+# Approach:
 
 I started out by creating and account on https://developer.nytimes.com/. Getting an API key meant I needed to register an app. I named my app FavBooks. I wanted to get the basic requirements to start the homework out of the way, so after some refreshing on some of my skills, I was able to store the API Key in system environment and then load it here using request and req_url_query function.\
 Once I have an ok status, as can be seen from the following code, I'd now work on creating and cleaning the dataset.
 
 ```{r}
 library(httr2)
+library(tidyverse)
+library("DT")
 readRenviron("Sys.env")
 
 Sys.getenv("API_KEY") != ""
@@ -20,6 +22,12 @@ Sys.getenv("API_KEY") != ""
 req<- request("https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json") |> req_url_query(`api-key` = Sys.getenv("API_KEY"))
 
 resp <- req_perform(req)
-resp_body_json(resp)$result$books
+books <- resp_body_json(resp)$results$books
+data.frame(
+  Rank = sapply(books, function(x) x$rank),
+  Title = sapply(books, function(x) x$title),
+  Author = sapply(books, function(x) x$author)
+)
+
 
 ```
