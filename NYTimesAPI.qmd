@@ -1,0 +1,187 @@
+---
+title: "NY Times API"
+format: html
+editor: visual
+Author: Mubin Ejaz
+description: Data 607, Assignment 7, Approach
+---
+
+# Research Question:
+
+What are the top 5 books that have been on the NYTimes Best selling books the longest?
+
+# API Selected:
+
+I selected the New York Times Books API. It is specifically the current hardcover fiction Bestseller List endpoint.
+
+Endpoint:
+
+https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json
+
+The request uses two parameters:
+
+-   `api-key`: My authentication key, retrieved from my environment variable.
+
+-   `hardcover-fiction`: The bestseller list requested, specified in the endpoint URL.
+
+The API returns information about books currently appearing on the hardcover fiction bestseller list.
+
+### *Approach:*
+
+I started out by creating and account on https://developer.nytimes.com/. Getting an API key meant I needed to register an app. I named my app FavBooks. I wanted to get the basic requirements to start the homework out of the way, so after some refreshing on some of my skills, I was able to store the API Key in system environment and then load it here using request and req_url_query function.
+
+```{r}
+library(httr2)
+library(tidyverse)
+library("DT")
+
+
+#Reading the Sys.env file where the API_KEY is saved
+readRenviron("Sys.env")
+
+#making sure the key isn't null
+Sys.getenv("API_KEY") != ""
+
+#getting the request ready, NYTimes gives example code for this!
+req<- request("https://api.nytimes.com/svc/books/v3/lists/current/hardcover-fiction.json") |> req_url_query(`api-key` = Sys.getenv("API_KEY"))
+
+
+#actually performing the request
+resp<-req_perform(req)
+
+#resp holds the actual json with results and books, untidy data
+books <- resp_body_json(resp)$results$books 
+
+#Creating a function to call run through each book, which will pick the
+#called upon entity from the data
+return_tidy<-function(x,field){x[[field]]}
+
+
+```
+
+```         
+```
+
+#### Dataframe creation using sapply function to run through every book
+
+```{r}
+books_df <- data.frame(
+  Rank = sapply(books, return_tidy, field = "rank"),
+  Title = sapply(books, return_tidy, field = "title"),
+  Author = sapply(books, return_tidy, field = "author"),
+  Description = sapply(books, return_tidy, field = "description"),
+  Publisher = sapply(books, return_tidy, field = "publisher"),
+  Weeks_on_List = sapply(books, return_tidy, field = "weeks_on_list")
+)
+
+```
+
+### Top 5 books in descending order that have been on the list.
+
+```{r}
+ books_df |> arrange(desc(Weeks_on_List)) |>
+  select(Rank, Title, Author, Weeks_on_List) |>
+  head(5)
+
+```
+
+# Second API Call:
+
+Making another API call to NYTimes that would return overview list. Upon investigating a little bit, I realized that it returns a list of lists (list of best selling books under Hard-fiction, or how-to books etc).\
+I ran the following commands to investigate:
+
+```         
+books_overview <- resp_body_json(resp2)$results$lists
+```
+
+```         
+names(books_overview[[1]])
+```
+
+Following code, returned a column name ***List***, which is NYTimes' way of showing genre, ***Average_Weeks*****,** and ***Number_of_Books.\
+*** I felt like this data was more insteresting. and I decided to plot this.
+
+```{r}
+#| label: Trying API Overview Suggested In NYTimes API Help 
+req2<- request("https://api.nytimes.com/svc/books/v3/lists/overview.json?") |> req_url_query(`api-key` = Sys.getenv("API_KEY"))
+
+resp2<-req_perform(req2)
+
+books_overview <- resp_body_json(resp2)$results$lists
+
+books_df_overview <- map_dfr(books_overview, function(lst) {
+
+  data.frame(
+    List = lst$list_name,
+    Rank = sapply(lst$books, return_tidy, field = "rank"),
+    Title = sapply(lst$books, return_tidy, field = "title"),
+    Author = sapply(lst$books, return_tidy, field = "author"),
+    Weeks_on_List = sapply(lst$books, return_tidy, field = "weeks_on_list")
+  )
+
+})
+
+books_df_overview |>
+  group_by(List) |>
+  summarise(
+    Average_Weeks = mean(Weeks_on_List, na.rm = TRUE),
+    Number_of_Books = n()
+  )
+
+```
+
+```{r}
+ggplot(books_df_overview, 
+       aes(x = List, y = Weeks_on_List)) +
+  geom_boxplot() +
+  labs(
+    title = "Weeks on NYT Bestseller Lists",
+    x = "Bestseller Category",
+    y = "Weeks on List"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#Looking at why Children's books have such a huge >750 weeks streak.
+books_df_overview |>
+  filter(List == "Children’s Middle Grade Hardcover") |>
+  arrange(desc(Weeks_on_List)) |>
+  select(Title, Weeks_on_List)
+
+
+```
+
+# Data Cleaning:
+
+The API response was returned in JSON format, with book infomation stored in nested lists. I extracted the *books* portion of the response and created a function called return_tidy to extract the data I needed i.e. publisher, weeks_on_the_list, etc.\
+\
+I also used the sapply() function to iterate through each book and extract it's rank, title, author, description, publisher, and number of weeks on the best seller list.\
+\
+I then used data.frame() to organize these extracted fields into a structured table with each row representing an individual books.
+
+When I plotted the overview api call dataframe, I noticed that children's books plot was huge.\
+It was \>750 weeks. I looked at the data (with the help of ChatGPT:\
+***books_df_overview \|\> filter(List == "Children’s Middle Grade Hardcover") \|\> arrange(desc(Weeks_on_List)) \|\> select(Title, Weeks_on_List)\
+\
+***The above code gave me the outliers: WONDER and The Complete Cookbook for Young Chefs. Been the best sellers in their own categories for around 11 years.\
+\
+
+```{r}
+ggplot(books_df_overview,
+       aes(x = reorder(List, Weeks_on_List, FUN = median),
+           y = Weeks_on_List)) +
+  geom_boxplot() +
+  coord_flip(ylim = c(0, 100)) +
+  labs(
+    title = "Weeks on NYT Bestseller Lists",
+    subtitle = "Focused view: 0–100 weeks",
+    x = "Bestseller Category",
+    y = "Weeks on List"
+  ) +
+  theme_minimal()
+```
+
+## Conclusion:
+
+It seems that Most popular books after the children type books are Paperback Trade Fiction.\
+The analysis shows that the number of weeks books remain on the NYT bestseller lists varies considerably across categories. This suggests that bestseller longevity differs depending on the book category.
