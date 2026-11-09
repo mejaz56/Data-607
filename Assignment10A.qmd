@@ -1,0 +1,270 @@
+---
+title: "Assignment 10A CodeBase"
+author: "Mubin Ejaz"
+format: html
+editor: visual
+---
+
+## Objective
+
+The objective of this assignment is to reproduce and extend the sentiment analysis example presented in Chapter 2 of *Text Mining with R: A Tidy Approach* by Julia Silge and David Robinson (2017).
+
+## Initial Approach: Sentiment Analysis with Text Mining with R
+
+I started out by reproducing the example given in Chapter 2, Sentiment Analysis, in the book *Text Mining With R.*
+
+## Extend the example:
+
+For my extended analysis, I downloaded the IMDb Large Movie Review Dataset from Zenodo. I selected a balanced sample of 50 movie reviews, consisting of 25 positive and 25 negative reviews. I used the Bing and AFINN sentiment lexicons to compare how each method evaluates the reviews.
+
+-   Bing showed whether a word is positive or negative.
+
+-   AFINN showed how strongly positive or negative a word is.
+
+That's the comparison we'll make using the movie reviews.
+
+My additional package is `textdata`, and additional lexicon is AFINN\
+
+# Reproducing the code From the textbook:
+
+```{r}
+library(janeaustenr)
+library(dplyr)
+library(stringr)
+library(tidytext)
+library(ggplot2)
+#creating tidy_books dataframe fom austen_books. 
+tidy_books <- austen_books() %>%
+  group_by(book) %>%
+  mutate(
+    linenumber = row_number(),
+    chapter = cumsum(str_detect(text, 
+                                regex("^chapter [\\divxlc]", 
+                                      ignore_case = TRUE)))) %>%
+  ungroup() %>%
+  unnest_tokens(word, text)
+```
+
+```{r}
+nrc_joy <- get_sentiments("nrc") %>%
+  filter(sentiment == "joy")
+
+emma_joy <- tidy_books %>%
+  filter(book == "Emma") %>%
+  inner_join(nrc_joy, by = "word") %>%
+  count(word, sort = TRUE)
+
+head(emma_joy, 10)
+```
+
+```{r}
+library(tidyr)
+jane_austen_sentiment <- tidy_books %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(book, index = linenumber %/% 80, sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  mutate(sentiment = positive - negative)
+
+
+```
+
+```{r}
+ggplot(
+  jane_austen_sentiment,
+  aes(index, sentiment, fill = book)
+) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~book, ncol = 2, scales = "free_x")
+```
+
+# Sentiment Analysis of Movie Reviews:
+
+### Corpus: IMDb Large Movie Review Dataset
+
+```{r}
+library(readr)
+library(dplyr)
+library(stringr)
+
+#loading IMDB database
+imdb_data <- read_csv(
+  "IMDB Dataset.csv",
+  show_col_types = FALSE
+)
+```
+
+```         
+```
+
+```{r}
+#Still verifying the dataset
+imdb_data %>%
+  count(sentiment)
+
+
+set.seed(607)
+imdb_sample <- imdb_data %>%
+  group_by(sentiment) %>%
+  slice_sample(n = 25) %>%
+  ungroup() %>%
+  mutate(
+    review_id = row_number()
+  )
+```
+
+Cleaning up the line breaks in HTML reviews
+
+```{r}
+imdb_sample <- imdb_sample %>%
+  mutate(
+    review = str_replace_all(
+      review,
+      regex("<br\\s*/?>", ignore_case = TRUE),
+      " "
+    )
+  )
+```
+
+Do Tokenization
+
+```{r}
+imdb_words <- imdb_sample %>%
+  unnest_tokens(word, review)
+```
+
+Sentiment Analysis Using Bing
+
+```{r}
+bing_matches <- imdb_words %>%
+  inner_join(
+    get_sentiments("bing"),
+    by = "word",
+    suffix = c("_review", "_bing")
+  )
+```
+
+Calculating the positive and negative words for each review:
+
+```{r}
+bing_by_review <- bing_matches %>%
+  group_by(review_id) %>%
+  summarise(
+    positive_words = sum(sentiment_bing == "positive"),
+    negative_words = sum(sentiment_bing == "negative"),
+    bing_score = positive_words - negative_words,
+    .groups = "drop"
+  )
+head(bing_by_review)
+```
+
+# AFINN sentiment analysis
+
+```{r}
+afinn_matches <- imdb_words %>%
+  inner_join(
+    get_sentiments("afinn"),
+    by = "word"
+  )
+
+#calculating the setiment score for each review
+afinn_by_review <- afinn_matches %>%
+  group_by(review_id) %>%
+  summarise(
+    afinn_score = sum(value),
+    average_score = mean(value),
+    matched_words = n(),
+    .groups = "drop"
+  )
+head(afinn_by_review)
+```
+
+COmparing Bing and AFINN reivews
+
+```{r}
+review_word_counts <- imdb_words %>%
+count(review_id, name = "total_words")
+```
+
+Combing the results.
+
+```{r}
+
+
+imdb_results <- imdb_sample %>%
+  select(review_id, actual_sentiment = sentiment) %>%
+  left_join(review_word_counts, by = "review_id") %>%
+  left_join(bing_by_review, by = "review_id") %>%
+  left_join(afinn_by_review, by = "review_id") %>%
+  mutate(
+    across(
+      c(positive_words, negative_words, bing_score,
+        afinn_score, average_score, matched_words),
+      ~ tidyr::replace_na(.x, 0)
+    ),
+    bing_per_100 = 100 * bing_score / total_words,
+    afinn_per_100 = 100 * afinn_score / total_words
+  )
+
+head(imdb_results)
+comparison <- imdb_results %>%
+  group_by(actual_sentiment) %>%
+  summarise(
+    number_of_reviews = n(),
+    bing_average = mean(bing_per_100),
+    afinn_average = mean(afinn_per_100),
+    .groups = "drop"
+  )
+
+comparison
+```
+
+Graph:
+
+```{r}
+
+ # Preparing data for the graph
+
+imdb_long <- imdb_results %>%
+  select(
+    review_id,
+    actual_sentiment,
+    bing_per_100,
+    afinn_per_100
+  ) %>%
+  pivot_longer(
+    cols = c(bing_per_100, afinn_per_100),
+    names_to = "lexicon",
+    values_to = "score"
+  ) %>%
+  mutate(
+    lexicon = recode(
+      lexicon,
+      bing_per_100 = "Bing",
+      afinn_per_100 = "AFINN"
+    )
+  )
+
+# Creating the graph
+
+ggplot(
+  imdb_long,
+  aes(
+    x = actual_sentiment,
+    y = score,
+    fill = actual_sentiment
+  )
+) +
+  geom_boxplot(show.legend = FALSE) +
+  facet_wrap(~lexicon, scales = "free_y") +
+  labs(
+    title = "Sentiment Analysis of IMDb Movie Reviews",
+    subtitle = "Comparing Bing and AFINN",
+    x = "Original IMDb Review Label",
+    y = "Sentiment Score per 100 Words"
+  ) +
+  theme_minimal()
+```
+
+# Conclusion
+
+Overall, this assignment helped me understand how sentiment analysis works and how different lexicons can produce different results. I found it interesting that Bing and AFINN did not always agree, even though they were analyzing the same movie reviews. Both showed higher sentiment scores for positive reviews, but AFINN actually gave the negative reviews a slightly positive average score. This made me realize that sentiment analysis isn't always as straightforward as counting positive and negative words because context and how words are used also matter.
