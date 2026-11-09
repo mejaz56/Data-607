@@ -1,0 +1,299 @@
+---
+title: "Assingment 10B-CodeBase"
+description: "Nobel Prize"
+author: "Mubin Ejaz"
+format: html
+editor: visual
+---
+
+# Approach:
+
+I'd first make just a simple call to API to make sure I can connect.\
+I chose the 4 questions I'd want to be answered.
+
+```{r}
+
+library(httr2)
+library(tidyverse)
+library(DT)
+
+# Getting Nobel laureate data
+get_page <- function(offset) {
+  request("https://api.nobelprize.org/2.1/laureates") %>%
+    req_url_query(
+      limit = 1000,
+      offset = offset,
+      format = "json"
+    ) %>%
+    req_perform() %>%
+    resp_body_json()
+}
+
+# Downloading all pages
+laureates <- list()
+offset <- 0
+
+repeat {
+  data <- get_page(offset)
+  page <- data$laureates
+
+  if (length(page) == 0) break
+
+  laureates <- append(laureates, page)
+
+  if (length(page) < 1000) break
+
+  offset <- offset + 1000
+}
+
+length(laureates)
+```
+
+-   **Question 1:\
+    ORIGINAL Question: \
+    **What is the basic criteria for choosing the nominees?
+
+**The change: \
+**One important distinction: the Nobel API publishes laureates and award motivations, but it does not publish current nominee lists or confidential nomination evaluations. Those records are kept secret for 50 years.
+
+So:
+
+-   Q1 becomes: What reasons are given for awarding Nobel Prizes?
+
+```{r}
+# Helper function to get information from nested JSON
+get_value <- function(x, ...) {
+  value <- purrr::pluck(x, ..., .default = NA_character_)
+  as.character(value[[1]])
+}
+
+# Getting the laureate's name
+get_name <- function(x) {
+  name <- get_value(x, "fullName", "en")
+
+  if (is.na(name)) {
+    name <- get_value(x, "orgName", "en")
+  }
+
+  name
+}
+
+# Getting birthplace country
+get_country <- function(x) {
+  country <- get_value(x, "birth", "place", "countryNow", "en")
+
+  if (is.na(country)) {
+    country <- get_value(x, "birth", "place", "country", "en")
+  }
+
+  country
+}
+
+# Creating a table of laureates
+laureates_df <- tibble(
+  id = map_chr(laureates, ~ get_value(.x, "id")),
+  name = map_chr(laureates, get_name),
+  gender = map_chr(laureates, ~ get_value(.x, "gender")),
+  birth_country = map_chr(laureates, get_country),
+  birth_date = map_chr(laureates, ~ get_value(.x, "birth", "date")),
+  death_date = map_chr(laureates, ~ get_value(.x, "death", "date")),
+  prizes = map(laureates, ~ purrr::pluck(.x, "nobelPrizes", .default = list()))
+)
+
+# Creating one row per laureate and prize
+prize_df <- laureates_df %>%
+  unnest_longer(prizes, values_to = "prize") %>%
+  mutate(
+    award_year = map_int(
+      prize, ~ as.integer(get_value(.x, "awardYear"))
+    ),
+    category = map_chr(
+      prize, ~ get_value(.x, "category", "en")
+    ),
+    motivation = map_chr(
+      prize, ~ get_value(.x, "motivation", "en")
+    ),
+    date_awarded = map_chr(
+      prize, ~ get_value(.x, "dateAwarded")
+    ),
+    affiliations = map(
+      prize,
+      ~ purrr::pluck(.x, "affiliations", .default = list())
+    )
+  )
+
+
+```
+
+```{r}
+#QUESTION 1
+
+
+# Showing the laureate, category, year and reason for the award
+
+motivation_table <- prize_df %>%
+  filter(!is.na(motivation), motivation != "") %>%
+  select(
+    AwardYear = award_year,
+    Category = category,
+    Laureate = name,
+    Motivation = motivation
+  ) %>%
+  distinct() %>%
+  arrange(desc(AwardYear))
+
+head(motivation_table)
+
+```
+
+The data returned doesn't really answer my question. My question was actually answered by my online research/browsing. Every September, thousands of individuals, such as university professors, scientists, previous laureates, and members of national assemblies are invited to submit candidate names.
+
+The comittee members of the organization carefully, then, select the finalists and
+
+• Committee Review: Submitted candidates are handed over to dedicated Nobel Committees (comprising 5 to 10 members for each prize, or a 5-member committee appointed by the Norwegian Parliament for the Peace Prize). • Expert Consultation: Committees review the records, consult international experts, and commission detailed evaluation reports to narrow down the pool of candidates. • Iterative Deliberation: The committees discuss the shortlisted candidates thoroughly through the spring and summer.
+
+3.  Final Vote and Announcement (October)
+
+• The Vote: Between August and September, the respective prize-awarding institutions (such as the Royal Swedish Academy of Sciences or the Norwegian Nobel Committee) take a final vote—usually by majority—to select the new laureates. • The Announcement: In the first week of October, the winners are officially announced globally.
+
+-   **Question 2:**\
+    Does every category ends up with a winner every year\
+    My approach is to check years in which a category had no winners
+
+```{r}
+# Finding the first and latest year for each category
+latest_year <- max(prize_df$award_year, na.rm = TRUE)
+
+category_years <- prize_df %>%
+  group_by(category) %>%
+  summarise(first_year = min(award_year), .groups = "drop") %>%
+  mutate(
+    award_year = map(first_year, ~ seq(.x, latest_year))
+  ) %>%
+  unnest(award_year)
+
+# Finding category/year combinations without a laureate
+missing_awards <- category_years %>%
+  anti_join(
+    prize_df %>% distinct(category, award_year),
+    by = c("category", "award_year")
+  )
+
+# Counting years without awards by category
+missing_awards %>%
+  count(category, name = "years_without_award")
+
+```
+
+The results actually show the years corresponding category did not get award
+
+-   **Question 3:**\
+    Does Nobel Prize laureates data seem to be politically motivated at all?\
+    \
+    **The Change due to data limitations:** \
+    Q3 becomes: How many Peace Prize recipients are individuals versus organizations? The data cannot establish political motivation by itself.
+
+    Instead of trying to prove political motivation, I'll compare the number of individual and organizational recipients of the Peace Prize.\
+    \
+
+    ```{r}
+    peace_results <- prize_df %>%
+      filter(category == "Peace") %>%
+      distinct(id, award_year, gender) %>%
+      mutate(
+        recipient_type = case_when(
+          gender == "org" ~ "Organization",
+          gender %in% c("male", "female") ~ "Individual",
+          TRUE ~ "Unknown"
+        )
+      ) %>%
+      count(recipient_type, sort = TRUE)
+
+    peace_results
+
+    ```
+
+    The table again doesn't answer the question. I plotted the country laureatte's were affiliated from vs \# numbers of awards that country got.
+
+```{r}
+# Counting Nobel awards by the laureate's birth country
+
+country_awards <- prize_df %>%
+  filter(!is.na(birth_country)) %>%
+  distinct(id, award_year, category, birth_country) %>%
+  count(birth_country, sort = TRUE, name = "Total_Awards")
+
+
+country_awards <- prize_df %>%
+  select(id, award_year, category, affiliations) %>%
+  unnest_longer(affiliations, values_to = "affiliation") %>%
+  mutate(
+    country = map_chr(affiliation, function(x) {
+      country <- x$countryNow$en
+
+      if (is.null(country)) {
+        country <- x$country$en
+      }
+
+      if (is.null(country)) NA_character_ else country
+    })
+  ) %>%
+  filter(!is.na(country), country != "") %>%
+  distinct(id, award_year, category, country) %>%
+  count(country, sort = TRUE, name = "Total_Awards")
+
+# Plotting Nobel laureate awards by country
+
+ggplot(
+  country_awards,
+  aes(
+    x = reorder(country, Total_Awards),
+    y = Total_Awards
+  )
+) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Nobel Laureate Awards by Country",
+    subtitle = "Based on institutional affiliation",
+    x = "Country",
+    y = "Number of Awards"
+  ) +
+  theme_minimal()
+```
+
+So, in my opinion, nobel prize organization doesn't seem to be politically motivated. The Nobel organization is based/from Sweeden and Norway but the most awards are given to The USA Laureates. \
+Infact, Swedan and Noaway seem to be below many.
+
+-   **Question 4:**\
+    Can peaple that have passed away get nobel prize?\
+    I'll compare the laureate's death date with the date the prize was announced.
+
+```{r}
+posthumous_results <- prize_df %>%
+  mutate(
+    death_date = as.Date(death_date),
+    date_awarded = as.Date(date_awarded),
+    death_year = as.integer(format(death_date, "%Y")),
+
+    died_before_announcement = case_when(
+      !is.na(death_date) & !is.na(date_awarded) ~
+        death_date < date_awarded,
+
+      !is.na(death_year) ~ death_year < award_year,
+
+      TRUE ~ FALSE
+    )
+  ) %>%
+  filter(died_before_announcement) %>%
+  distinct(
+    name, category, award_year,
+    death_date, date_awarded
+  ) %>%
+  arrange(award_year)
+
+posthumous_results
+
+```
+
+So Yes, it is given to people that have passed away.
