@@ -30,6 +30,8 @@ For a young consumer, they'd like to provide entertainment. Also TikTok keeps co
 
 ## 3)  Reverse Engineering
 
+[TikTok's Recommender System Workflow Reverse Engineering](https://github.com/mejaz56/Data-607/blob/TikTok's-Recommender-System/Drawing%204.png)\
+
 ![](images/Drawing%204.png){width="791"}
 
 \
