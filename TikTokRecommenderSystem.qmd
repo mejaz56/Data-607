@@ -1,0 +1,64 @@
+---
+title: "Analyze a Commercial Recommender System"
+author: "Mubin Ejaz"
+format: html
+editor: visual
+---
+
+## 1)  Introduction
+
+For the discussion board analysis of a commercial recommender system, I chose TikTok. TikTok has a very unique algorithm, which is like none other. As required I'll be doing Scenario Design Analysis of it. I'll also do reverse engineering of their main system by mapping the given, *How TikTok recommendends content,* on their support page, [TikTok Support Page](https://www.tiktok.com/support/faq_detail?id=7655285288050104852&category=web_account#2) . I will also recommend how it can be better. Finally, I'll upload this on my github and share the link on the discussion board.
+
+## 2)  Scenerio Design Analysis
+
+### 1) Target Audience:
+
+I was a bit confused about answering this question. I thought, "[People,]{.underline} of course TikTok's target audience would be people. Who else could be the target audience for any streaming platform. They probably want as large an age group as possible." But then my being around for so long gave me a clue. It's most probably younger people, for now anyway. AOL, MySpace, Facebook, Instagram, and now TikTok, all have one thing in common. All of these social media category of technology is first and foremost adapted and make successful by the young consumer. TikTok specially caters to very young audience, Gen-Z and younger millennials. Fast, 2 to 3 minutes trendy reels are perfect for even gen alpha, who are on TikTok by entering their older sibling's age.
+
+### 3) Key Goals:
+
+[Content Creator:]{.underline}
+
+TikTok gives creative young people an outlet to expess themselves to the world, which helps them reach the world without having a "role" in a movie or be a director with a huge capital, or even a huge following.\
+\
+A lot of these young people never aimed to be rich via social media, they were just being themselves and then it happened to them. Brand deals, brand trips, ad revenue, and etc just to promote a product to tap into the creator's following.
+
+[Consumer]{.underline}:\
+\
+For a young consumer, they'd like to provide entertainment. Also TikTok keeps consumer aware of latest trend and memes.\
+\
+
+## 3)  Reverse Engineering
+
+![](images/Drawing%204.png){width="791"}
+
+\
+
+" Each of these factors can play a larger or smaller role in what's recommended and how content is ranked. How important each factor is can change over time.• The factors that play a larger role do the best job of showing us the types of content you might enjoy.
+
+Each recommender system selects from a large collection of eligible content and ranks them based on the system's prediction of how likely you'll be interested in each one. In certain recommender systems, these predictions also consider interactions from others who appear to have similar interests. For example:
+
+•If User A likes videos 1, 2, and 3;
+
+•User B likes videos 1, 2, 3, 4, and 5;
+
+•then the recommender system may predict User A will also like videos 4 and 5.
+
+Since everyone has different preferences and signals, recommendation feeds like For You, Following, Friends, and LIVE remain unique to each person, even if some occasionally see the same content.
+
+*\[from: TikTok's support page\]*
+
+### Diversifying Recommendations:
+
+Another point worth mentioning is that not only do existing user get shown content based on their user interaction, content information, and user information, TikTok also diversifies what they promote to the viewer. On their website, it is stated as follows:
+
+*\
+**"*****Our goal is to show you relevant content while also helping you discover new interests. We aim to diversify your feeds by introducing you to new creators and content so you can explore different perspectives and ideas. That's why you may come across content in your For You and LIVE feeds that doesn't appear to be relevant to your expressed interests. We also typically don't recommend content you've already seen."**\
+
+###  4)  Further Recommendation to make TikTok better:  
+
+I think the very thing that makes TikTok a unique and strong streaming platform, makes for it's weakness. What I mean by that is, constant loop keep pushing user into a corner or narrow subculture or echo chamber. \
+\
+They can provide a better refresh option, as right now their refresh option only temporarily pauses user preference. \
+\
+I would actually like to have them give more control to the user of which type of recommender their user wants to follow, an active one or a passive one. Passive one would be what TikTok is showing right now, quiet aggressively. Active would be focusing more on what the user hit like, favourites, or interacts with.
